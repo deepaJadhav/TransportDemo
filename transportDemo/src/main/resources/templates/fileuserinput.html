@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<style>
+th {
+    text-align: left;
+    color: #4679bd;
+}
+
+tbody > tr:nth-of-type(even) {
+    background-color: #daeaff;
+}
+
+button {
+    cursor: pointer;
+    margin-top: 1rem;
+    align:center;
+}
+</style>
+</head>
+<script type="text/javascript">
+var app = angular.module("app", []);
+app.controller('reportCtrl', function($scope,$http) {
+	$scope.fileName=null;
+	$scope.maxThreads=null;
+	$scope.isclick=false;
+
+	$scope.generateEncryptedFile =function () {
+		$scope.isclick=true;
+		$scope.startdategeaterError=false;
+
+		    if($scope.fileName!=null && $scope.maxThreads!=null){
+		    	fileReadLine={
+		    			line:null,
+		    			fileName:$scope.fileName,
+		    			maxThreads:$scope.maxThreads
+                      };
+    $http.post('/display/encyptedfileinputs', JSON.stringify(fileReadLine)).then(function mySuccess(response) {
+        $scope.numOfDays = response.data;
+    }, function myError(response) {
+    });
+		    }
+			$scope.isclick=true;
+
+	}
+
+
+});
+
+</script>
+</head>
+
+<body>
+<div data-ng-app="app" data-ng-controller="reportCtrl" class="container">
+    <header >Get Encrypted File</header>
+     </br>
+<form name="myForm" data-ng-submit="displayNumberOfdays()">
+            File Name<input type="text" name="fileName" data-ng-model="fileName"
+            placeholder="fileName" required="required" autocomplete="off" /> 
+           <span data-ng-show="isclick && myForm.fileName.$error.required" class="alert alert-danger" >Start Date is required</span>
+           
+            Max Thread<input type="text" name="maxThreads" data-ng-model="maxThreads"
+            placeholder="maxThreads" required="required" autocomplete="off" /> 
+             <span data-ng-show="isclick && myForm.maxThreads.$error.required" class="alert alert-danger" >End Date is required</span>
+            <input type="submit" data-ng-click="generateEncryptedFile()"/>
+            <span data-ng-show="isclick && startdategeaterError" class="alert alert-danger" >Start Date is greater than End Date</span>
+                      <div data-ng-show="isclick && !myForm.maxThreads.$error.required && !myForm.fileName.$error.required && numOfDays!=NULL"> </div>     
+           
+           
+           </form>
+           </div>
+
+</body>
+</html>
+
+</body>
+</html>

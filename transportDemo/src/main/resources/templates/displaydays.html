@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<style>
+th {
+    text-align: left;
+    color: #4679bd;
+}
+
+tbody > tr:nth-of-type(even) {
+    background-color: #daeaff;
+}
+
+button {
+    cursor: pointer;
+    margin-top: 1rem;
+    align:center;
+}
+</style>
+</head>
+<script type="text/javascript">
+var app = angular.module("app", []);
+app.controller('reportCtrl', function($scope,$http) {
+	$scope.startDate=null;
+	$scope.endDate=null;
+	$scope.numOfDays=null;
+	$scope.emptyDateError=null;
+	$scope.startdategeaterError=null;
+	$scope.isclick=false;
+	$scope.startdategeaterError=false;
+
+	$scope.displayNumberOfdays =function () {
+		$scope.emptyDateError=null;
+		$scope.isclick=true;
+		$scope.startdategeaterError=false;
+
+		    if($scope.startDate==null || $scope.endDate==null)
+			{
+			   // alert('enter start date or end date');
+			    $scope.emptyDateError="StartDate or EndDate cannot be null";
+			}
+		    else if($scope.startDate > $scope.endDate){
+		    	$scope.startdategeaterError=true;
+		    }
+		    else{
+		      days={
+		      startDate:$scope.startDate,
+		    endDate:$scope.endDate,
+		    numOfDays:0.0
+       };
+    console.log($scope.startDate);	
+    $http.post('/display/CalculateOfDays', JSON.stringify(days)).then(function mySuccess(response) {
+        $scope.numOfDays = response.data;
+    }, function myError(response) {
+    });
+		    }
+			$scope.isclick=true;
+
+	}
+
+
+});
+
+</script>
+</head>
+
+<body>
+<div data-ng-app="app" data-ng-controller="reportCtrl" class="container">
+    <header >Get Number Of Days Between Dates</header>
+     </br>
+<form name="myForm" data-ng-submit="displayNumberOfdays()">
+            Start Date<input type="date" name="startdate" data-ng-model="startDate"
+            placeholder="Start Date" required="required" autocomplete="off" /> 
+           <span data-ng-show="isclick && myForm.startdate.$error.required" class="alert alert-danger" >Start Date is required</span>
+           
+            End Date<input type="date" name="enddate" data-ng-model="endDate"
+            placeholder="End Date" required="required" autocomplete="off" /> 
+             <span data-ng-show="isclick && myForm.enddate.$error.required" class="alert alert-danger" >End Date is required</span>
+            <input type="submit" data-ng-click="displayNumberOfdays()"/>
+            <span data-ng-show="isclick && startdategeaterError" class="alert alert-danger" >Start Date is greater than End Date</span>
+                      <div data-ng-show="isclick && !myForm.startdate.$error.required && !myForm.enddate.$error.required && numOfDays!=NULL">Number Of Days Are: {{numOfDays}} </div>     
+           
+           
+           </form>
+           </div>
+
+</body>
+</html>
+
+</body>
+</html>
